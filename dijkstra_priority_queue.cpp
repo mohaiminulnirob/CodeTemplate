@@ -1,64 +1,84 @@
 #include<bits/stdc++.h>
 using namespace std;
-long long dis[100005];
-bool vis[100005];
-long long n,m;
-#define ll long long
-map<long long,vector<pair<long long,long long>>>adjlist;
-priority_queue<pair<long long,long long>, vector<pair<long long,long long>>, greater<pair<long long,long long>>>pq;
+#define int long long
+#define pi pair<int,int>
+int graph[505][505];
+int dis[505];
+int vis[505];
+int n,m;
+void dijkstra(int x){
+	dis[x]=0;
+	priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+	pq.push({dis[x],x});
+	while(!pq.empty()){
+		int u=pq.top().second;
+		vis[u]=1;
+		pq.pop();
+		for(int i=1;i<=n;i++){
+			if(graph[u][i] && !vis[i] && dis[i]>dis[u]+graph[u][i]){
+				dis[i]=dis[u]+graph[u][i];
+				//vis[i]=1;
+			    pq.push({dis[i],i});
+			}
 
-void dijkstra(long long src)
-{
-    dis[src]=0;
-    pq.push(make_pair(dis[src],src));
-    while(!pq.empty())
-    {
-        long long u=pq.top().second;
-        pq.pop();
-        if(vis[u]==1)
-            continue;
-        vis[u]=1;
-        for(auto child:adjlist[u])
-        {
-            ll v = child.first;
-            ll w = child.second;
+		}
 
-            if (dis[v] > dis[u] + w) {
-                dis[v] = dis[u] + w;
-                pq.push(make_pair(dis[v], v));
-            }
-        }
-
-    }
+	}
 
 }
-
-int main()
+int32_t main()
 {
+	ios_base::sync_with_stdio(false);cin.tie(NULL);
+	#ifndef ONLINE_JUDGE
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+    #endif 
 
-        int t;
-        cin>>t;
-        while(t--)
+	int t;
+	cin>>t;
+	int cs=0;
+	while(t--)
+	{
+		cs++;
+		memset(vis,0,sizeof(vis));
+		memset(graph,0,sizeof(graph));
+		//int n,m;
+		cin>>n>>m;
+		for(int i=1;i<=n;i++)
         {
-        adjlist.clear();
-        cin>>n>>m;
+           dis[i]=INT_MAX;
+        }
+		for(int i=0;i<m;i++){
+			int x,y,z;
+			cin>>x>>y>>z;
+			x++;
+			y++;
+			if(graph[x][y]!=0)
+            {
+                if(z<graph[x][y])
+                {
+                    graph[x][y]=z;
+                    graph[y][x]=z;
+                }
+
+            }
+            else {
+                graph[x][y]=z;
+                graph[y][x]=z;
+            }
+		}
+		int src;
+		cin>>src;
+		src++;
+		dijkstra(src);
+		cout<<"Case "<<cs<<": "<<endl;
         for(int i=1;i<=n;i++)
         {
-            dis[i]=LLONG_MAX;
-            vis[i]=0;
+            if(dis[i]!=INT_MAX)
+                 cout<<dis[i]<<endl;
+            else cout<<"Impossible"<<endl;
         }
-        for(int i=0;i<m;i++)
-        {
-            int x,y,z;
-            cin>>x>>y>>z;
-
-            adjlist[x].push_back(std:: make_pair(y,z));
-        }
-
-        dijkstra(1);
-        for(int i=1;i<=n;i++)
-            cout<<dis[i]<<" ";
-        cout<<endl;
-        }
-    return 0;
+        
+	}
+	return 0;
 }
